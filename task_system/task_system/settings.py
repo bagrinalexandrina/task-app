@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework.authtoken',
     'tasks',
     'users',
 ]
@@ -70,6 +72,20 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'task_system.wsgi.application'
+
+REST_FRAMEWORK = {
+
+    'DATETIME_FORMAT': "%Y-%m-%dT%H:%M:%SZ",
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+         'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
+}
 
 
 # Database
@@ -120,3 +136,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# AUTH USER
+AUTH_USER_MODEL = 'users.User'
