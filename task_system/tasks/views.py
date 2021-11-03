@@ -5,9 +5,12 @@ from tasks.models import Task
 from rest_framework.generics import GenericAPIView
 from tasks.serializers import TaskSerializer
 
+from rest_framework import permissions
+
 class TaskListView(GenericAPIView):
     serializer_class = TaskSerializer
 
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     
     @serialize_decorator(TaskSerializer)
     def post(self, request):
@@ -21,5 +24,6 @@ class TaskListView(GenericAPIView):
         
 
         return Response(TaskSerializer(task).data)
+    
 
 

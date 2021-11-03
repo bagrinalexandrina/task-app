@@ -12,6 +12,7 @@ class RegisterUserView(GenericAPIView):
     serializer_class = UserSerializer
     permission_classes = (AllowAny,)
     authentication_classes = ()
+    
 
     def get(self, request):
         user = User.objects.all()
