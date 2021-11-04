@@ -1,11 +1,9 @@
-import re
 from drf_util.decorators import serialize_decorator
-from model_utils.fields import StatusField
 from rest_framework.response import Response
 from tasks.models import Task
+from users.models import User
 from rest_framework.generics import GenericAPIView, get_object_or_404
-from tasks.serializers import TaskListSerializer, TaskSerializer
-
+from tasks.serializers import TaskListSerializer, TaskSerializer, UserCompletedTasksSerializer, UserTasksSerializer
 from rest_framework import permissions
 
 class TaskListView(GenericAPIView):
@@ -67,4 +65,25 @@ class TaskStatusDoneView(GenericAPIView):
         task.save()
         return Response(TaskSerializer(task).data)
 
-       
+  
+
+class UserTasksView(GenericAPIView):
+    serializer_class = UserTasksSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+    def get(self, request): 
+        user_task = Task.objects.filter(user=request.user).all()
+        return Response(UserTasksSerializer(user_task, many=True).data)
+
+class UserCompletedTasksView(GenericAPIView):
+    serializer_class = UserCompletedTasksSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get(self,request):
+        user_task = Task.objects.filter(user=request.user).filter(status='done')
+        return Response(UserCompletedTasksSerializer(user_task, many=True).data)
+
+
+
+
+
