@@ -9,7 +9,7 @@ class Task(models.Model):
     title = models.CharField(max_length=100, unique=True)
     description = models.TextField()
 
-    STATUS = Choices('open', 'in progress', 'completed')
+    STATUS = Choices('open', 'in progress', 'done')
     status = StatusField(choices_name='STATUS')
 
     def __str__(self):
