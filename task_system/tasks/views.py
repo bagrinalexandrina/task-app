@@ -3,8 +3,9 @@ from rest_framework.response import Response
 from tasks.models import Task
 from users.models import User
 from rest_framework.generics import GenericAPIView, get_object_or_404
-from tasks.serializers import TaskListSerializer, TaskSerializer, UserCompletedTasksSerializer, UserTasksSerializer
+from tasks.serializers import TaskListSerializer, TaskSerializer, UserAssignTaskSerializer, UserCompletedTasksSerializer, UserTasksSerializer
 from rest_framework import permissions
+from django.contrib.auth import get_user_model
 
 class TaskListView(GenericAPIView):
     serializer_class = TaskSerializer
@@ -80,10 +81,21 @@ class UserCompletedTasksView(GenericAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get(self,request):
-        user_task = Task.objects.filter(user=request.user).filter(status='done')
+        user_task = Task.objects.filter(user=request.user,status='done')
         return Response(UserCompletedTasksSerializer(user_task, many=True).data)
 
 
+class UserAssignTaskView(GenericAPIView):
+    serializer_class = UserAssignTaskSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+    def post(self, request, pk, user_id):
+        task = get_object_or_404(Task, pk=pk)
+        user = get_object_or_404(get_user_model(), pk=user_id)
+        
+        task.user = user
+        task.save()
+
+        return Response(TaskSerializer(task).data)
 
 
