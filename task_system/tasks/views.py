@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from tasks.models import Task
 from users.models import User
 from rest_framework.generics import GenericAPIView, get_object_or_404
-from tasks.serializers import TaskListSerializer, TaskSerializer, UserAssignTaskSerializer, UserCompletedTasksSerializer, UserTasksSerializer
-from rest_framework import permissions
+from tasks.serializers import TaskListSerializer, TaskSerializer, UserCompletedTasksSerializer, UserTasksSerializer
+from rest_framework import permissions, status
 from django.contrib.auth import get_user_model
 
 class TaskListView(GenericAPIView):
@@ -86,7 +86,7 @@ class UserCompletedTasksView(GenericAPIView):
 
 
 class UserAssignTaskView(GenericAPIView):
-    serializer_class = UserAssignTaskSerializer
+    serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def post(self, request, pk, user_id):
@@ -97,5 +97,17 @@ class UserAssignTaskView(GenericAPIView):
         task.save()
 
         return Response(TaskSerializer(task).data)
+
+
+class DeleteTaskView(GenericAPIView):
+    serializer_class = TaskSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def delete(self, request, pk):
+        task = get_object_or_404(Task.objects.filter(pk=pk))
+        task.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 
 

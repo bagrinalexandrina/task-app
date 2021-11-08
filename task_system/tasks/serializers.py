@@ -24,10 +24,7 @@ class UserCompletedTasksSerializer(serializers.ModelSerializer):
         model = Task
         fields = ['id', 'title', 'status']
 
-class UserAssignTaskSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Task
-        fields = ['id','user']
+
 
 
 
