@@ -1,10 +1,9 @@
 from drf_util.decorators import serialize_decorator
 from rest_framework.response import Response
-from tasks.models import Task
-from users.models import User
+from tasks.models import Comment, Task
 from rest_framework.generics import GenericAPIView, get_object_or_404
-from tasks.serializers import TaskListSerializer, TaskSerializer, UserCompletedTasksSerializer, UserTasksSerializer
-from rest_framework import permissions, status
+from tasks.serializers import CommentSerilaizer, TaskListSerializer, TaskSerializer, UserCompletedTasksSerializer, UserTasksSerializer
+from rest_framework import permissions, status, viewsets
 from django.contrib.auth import get_user_model
 
 class TaskListView(GenericAPIView):
@@ -109,5 +108,22 @@ class DeleteTaskView(GenericAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class CommentsViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentSerilaizer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
+    @serialize_decorator(CommentSerilaizer)
+    def post(self, request, pk, user_id):
+        validated_data = request.serializer.validated_data
+     
+        comments = Comment.objects.create(
+            user = get_object_or_404(get_user_model(), pk=user_id),
+            title = validated_data['title'],
+            description = validated_data['description']
+        )
+        return Response(TaskSerializer(comments).data)
+
+        
+        
+ 

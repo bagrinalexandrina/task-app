@@ -1,13 +1,17 @@
 
-from django.db.models import fields
-from users.serializers import UserSerializer
-from tasks.models import Task
+from tasks.models import Comment, Task
 from rest_framework import serializers
 
+class CommentSerilaizer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['id', 'text', 'task']
+
 class TaskSerializer(serializers.ModelSerializer):
+    comments = CommentSerilaizer(many=True, read_only=True)
     class Meta:
         model = Task
-        fields =['id','title','description','status','user']
+        fields =['id','title','description','status','user', 'comments']
 
 class TaskListSerializer(serializers.ModelSerializer):
     class Meta:
