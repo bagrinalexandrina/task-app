@@ -5,6 +5,7 @@ from rest_framework.generics import GenericAPIView, get_object_or_404
 from tasks.serializers import CommentSerilaizer, TaskListSerializer, TaskSerializer, UserCompletedTasksSerializer, UserTasksSerializer
 from rest_framework import permissions, status, viewsets
 from django.contrib.auth import get_user_model
+from django.core.mail import BadHeaderError, send_mail
 
 class TaskListView(GenericAPIView):
     serializer_class = TaskSerializer
@@ -87,13 +88,20 @@ class UserCompletedTasksView(GenericAPIView):
 class UserAssignTaskView(GenericAPIView):
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
+    
     def post(self, request, pk, user_id):
         task = get_object_or_404(Task, pk=pk)
         user = get_object_or_404(get_user_model(), pk=user_id)
-        
         task.user = user
         task.save()
+        
+        send_mail(
+                    'New Assigned Task',
+                    'hi, this task was assigned to you',
+                    'stronceadenis@gmail.com',
+                    [user.email],
+                    fail_silently=False,
+                )    
 
         return Response(TaskSerializer(task).data)
 
@@ -125,5 +133,4 @@ class CommentsViewSet(viewsets.ModelViewSet):
         return Response(TaskSerializer(comments).data)
 
         
-        
- 
+
