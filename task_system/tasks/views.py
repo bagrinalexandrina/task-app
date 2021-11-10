@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from tasks.models import Comment, Task
 from rest_framework.generics import GenericAPIView, get_object_or_404
 from tasks.serializers import CommentSerializer, TaskListSerializer, TaskSerializer, UserCompletedTasksSerializer, UserTasksSerializer
-from rest_framework import permissions, status, viewsets
+from rest_framework import permissions, serializers, status, viewsets
 from django.contrib.auth import get_user_model
 from django.core.mail import BadHeaderError, send_mail
 
@@ -129,25 +129,15 @@ class DeleteTaskView(GenericAPIView):
 class CommentsViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+    def perform_create(self, serializer):
+        comment = serializer.save()
+        self.request.user
+        comment.task.user
 
-    @serialize_decorator(CommentSerializer)
-    def post(self, request, pk, user_id):
-        validated_data = request.serializer.validated_data
-     
-        comment = Comment.objects.create(
-            user = get_object_or_404(get_user_model(), pk=user_id),
-            text = validated_data['text']
-        )
-        
         send_mail(
-                    'New Comment on your task',
-                    'hi, your task has a new comment \n' + 'Comment: ' + comment.text ,
-                    'stronceadenis@gmail.com',
-                    ['bagrin.alexandrina@gmail.com'],
-                    fail_silently=False,
-                    
-                )   
-        
-        return Response(CommentSerializer(comment).data)
-
-        
+            'New Comment on your task',
+            'hi, your task has a new comment \n' + 'Comment: ' + comment.text ,
+            'stronceadenis@gmail.com',
+            [comment.task.user.email],
+        )   
