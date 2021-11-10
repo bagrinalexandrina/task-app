@@ -9,7 +9,7 @@ router.register(r'comments', CommentsViewSet, basename='comment')
 urlpatterns = router.urls
 
 urlpatterns += [
-    path('', TaskListView.as_view(), name='task_list'),
+    path('task/', TaskListView.as_view(), name='task_list'),
     path('task/<int:pk>/', TaskDetailView.as_view(), name='task_detail'),
     path('task/<int:pk>/in_progress/', TaskStatusInProgressView.as_view(), name='task_status_in_progress'),
     path('task/<int:pk>/done/', TaskStatusDoneView.as_view(), name='task_status_done'),
