@@ -1,9 +1,9 @@
 from drf_util.decorators import serialize_decorator
 from rest_framework.response import Response
-from tasks.models import Comment, Task
+from tasks.models import Task
 from rest_framework.generics import GenericAPIView, get_object_or_404
 from tasks.serializers import CommentSerializer, TaskListSerializer, TaskSerializer, UserCompletedTasksSerializer, UserTasksSerializer
-from rest_framework import permissions, serializers, status, viewsets
+from rest_framework import permissions, status, viewsets
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from rest_framework.filters import SearchFilter
@@ -37,7 +37,6 @@ class TaskListView(GenericAPIView):
         return Response(TaskSerializer(tasks).data)
     
 class TaskDetailView(GenericAPIView):
-#get task by ide and its details
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
@@ -82,7 +81,7 @@ class TaskStatusDoneView(GenericAPIView):
 class UserTasksView(GenericAPIView):
     serializer_class = UserTasksSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-#get all the task the logged user has  
+
     def get(self, request): 
         user_task = Task.objects.filter(user=request.user).all()
         return Response(UserTasksSerializer(user_task, many=True).data)

@@ -4,7 +4,6 @@ from django.db.models.fields.related import ForeignKey
 from model_utils.fields import StatusField
 from model_utils import Choices
 
-
 class Task(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE, related_name='tasks')
     title = models.CharField(max_length=100, unique=True)
