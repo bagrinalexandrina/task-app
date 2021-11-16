@@ -22,3 +22,10 @@ class Comment(models.Model):
     def __str__(self):
         return self.text
 
+class TimeLog(models.Model):
+    task = ForeignKey(Task, on_delete=models.CASCADE, related_name='timers')
+    start_datetime = models.DateTimeField(auto_now_add=True)
+    end_datetime = models.DateTimeField()
+
+    def __str__(self):
+        return self.task
